@@ -41,7 +41,7 @@ protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
 	TObjectPtr<UCameraComponent> CameraComp;
 
-protected:
+protected:	
 
 	FVector StartLocation;
 
