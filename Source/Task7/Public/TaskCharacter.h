@@ -48,6 +48,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Actor|Properties")
 	float Velocity;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Actor|Properties")
+	float SkyVelocityParm;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Actor|Properties")
 	float RotationSpeed;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Actor|Properties")
 	float Gravity;

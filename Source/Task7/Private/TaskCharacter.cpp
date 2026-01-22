@@ -30,6 +30,7 @@ ATaskCharacter::ATaskCharacter()
 	StartLocation = FVector::ZeroVector;
 
 	Velocity = 500.0f;
+	SkyVelocityParm = 0.5f;
 	RotationSpeed = 140.0f;
 	Gravity = 980.0f;
 }
@@ -123,7 +124,15 @@ void ATaskCharacter::Move(const FInputActionValue& Value)
 
 	if (!FMath::IsNearlyZero(MoveInput.X))
 	{
-		AddActorLocalOffset(FVector(MoveInput.X, 0, 0) * Velocity * Deltatime, true);
+		if (GetActorLocation().Z > StartLocation.Z)
+		{
+			AddActorLocalOffset(FVector(MoveInput.X, 0, 0) * SkyVelocityParm * Velocity * Deltatime, true);
+		}
+		else
+		{
+			AddActorLocalOffset(FVector(MoveInput.X, 0, 0) * Velocity * Deltatime, true);
+		}
+		
 	}
 	if (!FMath::IsNearlyZero(MoveInput.Y))
 	{
@@ -165,7 +174,7 @@ void ATaskCharacter::Look(const FInputActionValue& Value)
 void ATaskCharacter::Up(const FInputActionValue& Value)
 {
 	float Deltatime = UGameplayStatics::GetWorldDeltaSeconds(this);
-	float UpVelocity = (Velocity + Gravity) * Deltatime;
+	float UpVelocity = (SkyVelocityParm * Velocity + Gravity) * Deltatime;
 	if (Value.Get<bool>())
 	{
 		AddActorLocalOffset(FVector(0.0f, 0.0f, UpVelocity));
@@ -175,7 +184,7 @@ void ATaskCharacter::Up(const FInputActionValue& Value)
 void ATaskCharacter::Landing(const FInputActionValue& Value)
 {
 	float Deltatime = UGameplayStatics::GetWorldDeltaSeconds(this);
-	float DownVelocity = -1.0f * (Velocity + Gravity) * Deltatime;
+	float DownVelocity = -1.0f * (SkyVelocityParm * Velocity + Gravity) * Deltatime;
 	if (Value.Get<bool>())
 	{
 		if (GetActorLocation().Z > StartLocation.Z)
