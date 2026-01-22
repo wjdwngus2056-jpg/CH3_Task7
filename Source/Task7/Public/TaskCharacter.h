@@ -30,6 +30,8 @@ protected:
 	void Up(const FInputActionValue& Value);
 	UFUNCTION()
 	void Landing(const FInputActionValue& Value);
+	UFUNCTION()
+	bool isLanding();
 
 protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")

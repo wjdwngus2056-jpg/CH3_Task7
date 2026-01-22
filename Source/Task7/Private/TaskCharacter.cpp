@@ -39,7 +39,7 @@ void ATaskCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, 34.0f));
+	SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, 35.0f));
 	StartLocation = GetActorLocation();
 }
 
@@ -49,13 +49,12 @@ void ATaskCharacter::Tick(float DeltaTime)
 
 	FVector GravityOffset = { 0.f, 0.f, Gravity * DeltaTime * -1.0f };
 
-	if (GetActorLocation().Z > StartLocation.Z)
+	if (!isLanding())
 	{
 		AddActorWorldOffset(GravityOffset, true);
 	}
 	else
 	{
-		SetActorLocation(FVector(GetActorLocation().X, GetActorLocation().Y, StartLocation.Z));
 		SetActorRotation(FRotator(0.0f, GetActorRotation().Yaw, 0.0f));
 	}
 
@@ -124,7 +123,7 @@ void ATaskCharacter::Move(const FInputActionValue& Value)
 
 	if (!FMath::IsNearlyZero(MoveInput.X))
 	{
-		if (GetActorLocation().Z > StartLocation.Z)
+		if (!isLanding())
 		{
 			AddActorLocalOffset(FVector(MoveInput.X, 0, 0) * SkyVelocityParm * Velocity * Deltatime, true);
 		}
@@ -159,7 +158,7 @@ void ATaskCharacter::Look(const FInputActionValue& Value)
 		return;
 	}
 
-	if (GetActorLocation().Z > StartLocation.Z)
+	if (!isLanding())
 	{
 		AddActorLocalRotation(FRotator(PitchRotation, YawRotation, RollRotation));
 	}
@@ -187,10 +186,30 @@ void ATaskCharacter::Landing(const FInputActionValue& Value)
 	float DownVelocity = -1.0f * (SkyVelocityParm * Velocity + Gravity) * Deltatime;
 	if (Value.Get<bool>())
 	{
-		if (GetActorLocation().Z > StartLocation.Z)
+		if (!isLanding())
 		{
 			AddActorLocalOffset(FVector(0.0f, 0.0f, DownVelocity));
 		}
 	}
+}
+
+bool ATaskCharacter::isLanding()
+{
+	FVector Start = GetActorLocation();
+	FVector End = Start - FVector(0.f, 0.f, 32.f);
+
+	FHitResult HitResult;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+
+	bool Hitland = GetWorld()->LineTraceSingleByChannel(
+		HitResult,
+		Start,
+		End,
+		ECC_Visibility,
+		Params
+	);
+
+	return Hitland;
 }
 
